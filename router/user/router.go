@@ -6,4 +6,6 @@ func SetupRoutes(app *fiber.App) {
 	user := app.Group("/user")
 
 	user.Get("/", CreateUser)
+
+	user.Post("/register", Register)
 }

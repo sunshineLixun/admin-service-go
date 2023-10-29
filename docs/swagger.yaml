@@ -1,0 +1,57 @@
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.ResponseHTTP:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      password:
+        type: string
+      updatedAt:
+        type: string
+      userNmae:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: 注册新用户
+      parameters:
+      - description: 参数
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      summary: 注册
+      tags:
+      - user
+swagger: "2.0"
