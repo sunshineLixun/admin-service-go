@@ -30,9 +30,10 @@ const docTemplate = `{
                 "summary": "注册",
                 "parameters": [
                     {
-                        "description": "参数",
+                        "description": "用户名",
                         "name": "user",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }

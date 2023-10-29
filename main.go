@@ -15,7 +15,9 @@ import (
 
 func main() {
 
-	database.ConnectDb()
+	if err := database.ConnectDb(); err != nil {
+		log.Panic("链接失败, 错误原因", err.Error())
+	}
 
 	app := fiber.New()
 

@@ -15,7 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.ResponseHTTP
-// @Param user body models.User false "参数"
+// @Param user body models.User true "用户名"
 // @Router /user/register [post]
 func Register(ctx *fiber.Ctx) error {
 	user := new(models.User)

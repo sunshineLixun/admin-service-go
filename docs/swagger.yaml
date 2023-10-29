@@ -39,9 +39,10 @@ paths:
       - application/json
       description: 注册新用户
       parameters:
-      - description: 参数
+      - description: 用户名
         in: body
         name: user
+        required: true
         schema:
           $ref: '#/definitions/models.User'
       produces:
