@@ -9,6 +9,8 @@ definitions:
     type: object
   models.ResponseHTTP:
     properties:
+      code:
+        type: integer
       data: {}
       message:
         type: string
@@ -50,6 +52,10 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
       summary: 注册

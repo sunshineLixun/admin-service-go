@@ -1,8 +1,8 @@
 package database
 
 import (
-	"admin-service-go/config"
-	"admin-service-go/models"
+	"admin-service-go/configs"
+	"admin-service-go/internal/models"
 	"fmt"
 	"log"
 	"strconv"
@@ -22,11 +22,11 @@ func ConnectDb() (err error) {
 	}
 
 	var (
-		user     = config.Config("DB_USER")
-		password = config.Config("DB_PASSWORD")
-		host     = config.Config("DB_HOST")
-		db       = config.Config("DB_NAME")
-		_port    = config.Config("DB_PORT")
+		user     = configs.Config("DB_USER")
+		password = configs.Config("DB_PASSWORD")
+		host     = configs.Config("DB_HOST")
+		db       = configs.Config("DB_NAME")
+		_port    = configs.Config("DB_PORT")
 	)
 
 	port, err := strconv.Atoi(_port)
@@ -57,7 +57,9 @@ func ConnectDb() (err error) {
 
 	log.Println("链接数据库成功")
 
-	DBConn.AutoMigrate(&models.User{})
+	if err := DBConn.AutoMigrate(&models.User{}); err != nil {
+		return nil
+	}
 
 	return nil
 

@@ -45,6 +45,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.ResponseHTTP"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
                     }
                 }
             }
@@ -66,6 +72,9 @@ const docTemplate = `{
         "models.ResponseHTTP": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
                 "data": {},
                 "message": {
                     "type": "string"

@@ -2,7 +2,7 @@ package main
 
 import (
 	"admin-service-go/database"
-	"admin-service-go/router"
+	"admin-service-go/internal/router"
 	"log"
 
 	"github.com/gofiber/swagger"
@@ -31,6 +31,6 @@ func main() {
 		return c.SendStatus(404)
 	})
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":8080"))
 
 }
