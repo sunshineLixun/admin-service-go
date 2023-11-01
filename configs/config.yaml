@@ -1,0 +1,27 @@
+Server:
+  RunMode: debug
+  HttpHost: 127.0.0.1
+  HttpPort: 8080
+  ReadTimeout: 60
+  WriteTimeout: 60
+
+
+App:
+  DefaultPageSize: 10
+  MaxPageSize: 100
+  LogSavePath: storage/logs
+  LogFileName: app
+  LogFileExt: .log
+
+
+Database:
+  DBType: mysql
+  Username: root  # 填写你的数据库账号
+  Password: 123456789  # 填写你的数据库密码
+  Host: 127.0.0.1
+  Port: 3306
+  DBName: admin_service_db
+  Charset: utf8
+  ParseTime: True
+  MaxIdleConns: 10
+  MaxOpenConns: 30

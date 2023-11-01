@@ -1,8 +1,10 @@
 package main
 
 import (
-	"admin-service-go/database"
+	"admin-service-go/global"
+	"admin-service-go/internal/models"
 	"admin-service-go/internal/router"
+	"fmt"
 	"log"
 
 	"github.com/gofiber/swagger"
@@ -13,13 +15,26 @@ import (
 	_ "admin-service-go/docs"
 )
 
-func main() {
-
-	if err := database.ConnectDb(); err != nil {
-		log.Panic("链接失败, 错误原因", err.Error())
+func init() {
+	err := global.SetupSetting()
+	if err != nil {
+		log.Fatalf("读取配置初始化错误:%v", err)
 	}
 
-	app := fiber.New()
+	err = models.SetupDBEngine()
+
+	if err != nil {
+		log.Fatalf("配置数据库错误:%v", err)
+	}
+
+}
+
+func main() {
+
+	app := fiber.New(fiber.Config{
+		ReadTimeout:  global.ServerSetting.ReadTimeout,
+		WriteTimeout: global.ServerSetting.WriteTimeout,
+	})
 
 	app.Use(cors.New())
 
@@ -31,6 +46,6 @@ func main() {
 		return c.SendStatus(404)
 	})
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(fmt.Sprintf("%s:%d", global.ServerSetting.HttpHost, global.ServerSetting.HttpPort)))
 
 }
