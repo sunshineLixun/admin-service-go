@@ -2,7 +2,9 @@ package user
 
 import (
 	"admin-service-go/database"
-	"admin-service-go/models"
+	"admin-service-go/internal/models"
+	"admin-service-go/pkg/app"
+	"admin-service-go/pkg/errcode"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -45,7 +47,7 @@ func GetUser() {
 }
 
 func CreateUser(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{"status": "success", "message": "Created user", "data": nil})
+	return app.NewResponse(ctx).ToErrorResponse(errcode.ServerError)
 }
 
 func UpdateUser() {
