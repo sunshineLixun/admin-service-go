@@ -1,6 +1,7 @@
 package app
 
 import (
+	"admin-service-go/internal/models"
 	"admin-service-go/pkg/errcode"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
@@ -20,26 +21,39 @@ func NewResponse(ctx *fiber.Ctx) *Response {
 	return &Response{Ctx: ctx}
 }
 
-func (r *Response) ToResponse(data interface{}) error {
-	if data == nil {
-		// 如果没传，给个默认的json
-		data = fiber.Map{}
-	}
-	if err := r.Ctx.Status(http.StatusOK).JSON(data); err != nil {
-		newErr := errcode.NewError(100, err.Error())
-		return r.ToErrorResponse(newErr)
+func (r *Response) ToResponse(message string, data interface{}) error {
+	response := models.ResponseHTTP{
+		Success: true,
+		Message: message,
+		Data:    data,
+		Code:    0,
 	}
 
-	return nil
+	return r.Ctx.Status(http.StatusOK).JSON(response)
 }
 
 func (r *Response) ToErrorResponse(err *errcode.Error) error {
-	response := fiber.Map{"code": err.Code(), "msg": err.Msg()}
-	data := err.Data()
-	if len(data) > 0 {
-		response["data"] = data
+	response := models.ResponseHTTP{
+		Success: false,
+		Data:    nil,
+		Message: err.Msg(),
+		Code:    err.Code(),
 	}
 
-	return r.Ctx.Status(err.StatusCode()).JSON(response)
+	data := err.Data()
+	if len(data) > 0 {
+		response.Data = data
+	}
+
+	return r.Ctx.Status(http.StatusBadRequest).JSON(response)
+}
+
+func (r *Response) BodyParserErrorResponse(out interface{}) error {
+
+	if err := r.Ctx.BodyParser(out); err != nil {
+		return r.ToErrorResponse(errcode.NewError(1, err.Error()))
+	}
+
+	return nil
 
 }

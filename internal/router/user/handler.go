@@ -5,8 +5,8 @@ import (
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/errcode"
-	"net/http"
-
+	"admin-service-go/pkg/validation"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,30 +16,30 @@ import (
 // @Tags user
 // @Accept json
 // @Produce json
+// @Param user body models.UserSwagger true "接口入参"
 // @Success 200 {object} models.ResponseHTTP{}
-// @Failure 400 {object} models.ResponseHTTP{}
-// @Param user body models.User true "用户名"
-// @Router /user/register [post]
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
+// @Router /api/v1/user/register [post]
 func Register(ctx *fiber.Ctx) error {
 	user := new(models.User)
 
-	if err := ctx.BodyParser(user); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(models.ResponseHTTP{
-			Success: false,
-			Message: err.Error(),
-			Data:    nil,
-			Code:    0,
-		})
+	response := app.NewResponse(ctx)
+
+	err := response.BodyParserErrorResponse(user)
+	if err != nil {
+		return err
+	}
+
+	err = validation.CommonValidate(user)
+	if err != nil {
+		fmt.Printf("%s", err)
+		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 	}
 
 	global.DBEngine.Create(&user)
 
-	return ctx.Status(200).JSON(models.ResponseHTTP{
-		Success: true,
-		Message: "注册成功",
-		Data:    nil,
-		Code:    1,
-	})
+	return response.ToResponse("新增成功", user)
 }
 
 func GetUser() {

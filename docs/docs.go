@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user/register": {
+        "/api/v1/user/register": {
             "post": {
                 "description": "注册新用户",
                 "consumes": [
@@ -30,12 +30,12 @@ const docTemplate = `{
                 "summary": "注册",
                 "parameters": [
                     {
-                        "description": "用户名",
+                        "description": "接口入参",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserSwagger"
                         }
                     }
                 ],
@@ -47,9 +47,15 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "请求错误",
                         "schema": {
-                            "$ref": "#/definitions/models.ResponseHTTP"
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
                         }
                     }
                 }
@@ -57,17 +63,8 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
+        "errcode.Error": {
+            "type": "object"
         },
         "models.ResponseHTTP": {
             "type": "object",
@@ -84,25 +81,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.User": {
+        "models.UserSwagger": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
                 "password": {
                     "type": "string"
                 },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "userNmae": {
+                "userName": {
                     "type": "string"
                 }
             }

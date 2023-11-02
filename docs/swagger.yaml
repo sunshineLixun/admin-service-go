@@ -1,11 +1,5 @@
 definitions:
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
+  errcode.Error:
     type: object
   models.ResponseHTTP:
     properties:
@@ -17,36 +11,28 @@ definitions:
       success:
         type: boolean
     type: object
-  models.User:
+  models.UserSwagger:
     properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: integer
       password:
         type: string
-      updatedAt:
-        type: string
-      userNmae:
+      userName:
         type: string
     type: object
 info:
   contact: {}
 paths:
-  /user/register:
+  /api/v1/user/register:
     post:
       consumes:
       - application/json
       description: 注册新用户
       parameters:
-      - description: 用户名
+      - description: 接口入参
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.UserSwagger'
       produces:
       - application/json
       responses:
@@ -55,9 +41,13 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
         "400":
-          description: Bad Request
+          description: 请求错误
           schema:
-            $ref: '#/definitions/models.ResponseHTTP'
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
       summary: 注册
       tags:
       - user

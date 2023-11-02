@@ -23,7 +23,6 @@ func NewDbEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Fatal("链接失败, 错误原因", err)
 		return nil, err
 	}
 
@@ -35,6 +34,10 @@ func NewDbEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
 
 	sqlDB.SetMaxOpenConns(databaseSetting.MaxOpenConns)
 	sqlDB.SetMaxIdleConns(databaseSetting.MaxIdleConns)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Println("链接数据库成功")
 
@@ -49,6 +52,8 @@ func SetupDBEngine() error {
 	if err != nil {
 		return err
 	}
+
+	err = global.DBEngine.AutoMigrate(&User{})
 
 	return nil
 }
