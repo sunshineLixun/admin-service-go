@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/swagger v0.1.14
 	github.com/spf13/viper v1.17.0
 	github.com/swaggo/swag v1.16.2
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5
 )

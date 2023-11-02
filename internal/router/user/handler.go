@@ -47,6 +47,7 @@ func GetUser() {
 }
 
 func CreateUser(ctx *fiber.Ctx) error {
+	global.Logger.Infof("%s: test/%s", "test", "test-service")
 	return app.NewResponse(ctx).ToErrorResponse(errcode.ServerError)
 }
 

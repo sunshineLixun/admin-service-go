@@ -4,7 +4,9 @@ import (
 	"admin-service-go/global"
 	"admin-service-go/internal/models"
 	"admin-service-go/internal/router"
+	"admin-service-go/pkg/logger"
 	"fmt"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 
 	"github.com/gofiber/swagger"
@@ -27,6 +29,22 @@ func init() {
 		log.Fatalf("配置数据库错误:%v", err)
 	}
 
+	err = setupLogger()
+
+	if err != nil {
+		log.Fatalf("日志初始化错误:%v", err)
+	}
+
+}
+
+func setupLogger() error {
+	global.Logger = logger.NewLogger(&lumberjack.Logger{
+		Filename:  global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + global.AppSetting.LogFileExt,
+		MaxSize:   600,
+		MaxAge:    10,
+		LocalTime: true,
+	}, "", log.LstdFlags)
+	return nil
 }
 
 func main() {

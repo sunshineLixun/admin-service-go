@@ -1,14 +1,17 @@
 package global
 
 import (
+	"admin-service-go/pkg/logger"
 	"admin-service-go/pkg/setting"
 	"time"
 )
 
 var (
-	ServerSetting   *setting.ServerSettingS
-	AppSetting      *setting.AppSettingS
-	DatabaseSetting *setting.DatabaseSettingS
+	ServerSetting   = &setting.ServerSettingS{}
+	AppSetting      = &setting.AppSettingS{}
+	DatabaseSetting = &setting.DatabaseSettingS{}
+
+	Logger *logger.Logger
 )
 
 func SetupSetting() error {

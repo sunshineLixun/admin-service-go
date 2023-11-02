@@ -1,0 +1,1 @@
+2023/11/02 11:52:14 {"callers":["/Users/li/Documents/admin-service-go/internal/router/user/handler.go: 50 admin-service-go/internal/router/user.CreateUser"],"level":"info","message":"test: test/test-service","time":1698897134934322}
