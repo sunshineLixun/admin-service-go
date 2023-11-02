@@ -1,7 +1,7 @@
 package user
 
 import (
-	"admin-service-go/database"
+	"admin-service-go/global"
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/errcode"
@@ -32,7 +32,7 @@ func Register(ctx *fiber.Ctx) error {
 		})
 	}
 
-	database.DBConn.Create(&user)
+	global.DBEngine.Create(&user)
 
 	return ctx.Status(200).JSON(models.ResponseHTTP{
 		Success: true,
