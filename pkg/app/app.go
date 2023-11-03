@@ -32,7 +32,7 @@ func (r *Response) ToResponse(err *errcode.Error) error {
 	return r.Ctx.Status(http.StatusOK).JSON(response)
 }
 
-func (r *Response) ToErrorResponse(err *errcode.Error) error {
+func (r *Response) ToErrorResponse(status int, err *errcode.Error) error {
 	response := models.ResponseHTTP{
 		Success: false,
 		Data:    err.Data(),
@@ -40,13 +40,13 @@ func (r *Response) ToErrorResponse(err *errcode.Error) error {
 		Code:    err.Code(),
 	}
 
-	return r.Ctx.Status(http.StatusBadRequest).JSON(response)
+	return r.Ctx.Status(status).JSON(response)
 }
 
 func (r *Response) BodyParserErrorResponse(out interface{}) error {
 
-	if err := r.Ctx.BodyParser(out); err != nil {
-		return r.ToErrorResponse(errcode.NewError(1, err.Error()))
+	if err := r.Ctx.BodyParser(&out); err != nil {
+		return r.ToErrorResponse(http.StatusBadRequest, errcode.NewError(1, err.Error()))
 	}
 
 	return nil

@@ -5,6 +5,7 @@ import "github.com/gofiber/fiber/v2"
 func SetupRoutes(api fiber.Router) {
 	user := api.Group("/user")
 
-	user.Get("/", CreateUser)
+	user.Get("/", GetAllUser)
 	user.Post("/register", Register)
+	user.Get("/:id", GetUserById)
 }
