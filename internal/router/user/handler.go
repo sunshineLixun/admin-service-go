@@ -6,7 +6,6 @@ import (
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/errcode"
 	"admin-service-go/pkg/validation"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,9 +30,8 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = validation.CommonValidate(user)
+	err = validation.ValidateStruct(user)
 	if err != nil {
-		fmt.Printf("%s", err)
 		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 	}
 

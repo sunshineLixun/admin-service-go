@@ -2,12 +2,16 @@ package validation
 
 import (
 	"fmt"
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )
 
-var validate = validator.New()
+var validate *validator.Validate
+var translator ut.Translator
 
 type ErrorResponse struct {
 	Error       bool
@@ -16,43 +20,33 @@ type ErrorResponse struct {
 	Value       interface{}
 }
 
-func Validate(data interface{}) []ErrorResponse {
-	var validationErrors []ErrorResponse
-
-	errs := validate.Struct(data)
-	if errs != nil {
-		for _, err := range errs.(validator.ValidationErrors) {
-			var elem ErrorResponse
-
-			elem.FailedField = err.Field() // Export struct field name
-			elem.Tag = err.Tag()           // Export struct tag
-			elem.Value = err.Value()       // Export field value
-			elem.Error = true
-
-			validationErrors = append(validationErrors, elem)
-		}
-	}
-
-	return validationErrors
+func init() {
+	InitValidator()
 }
 
-func CommonValidate(data interface{}) error {
-	if errs := Validate(data); len(errs) > 0 && errs[0].Error {
-		errMsgs := make([]string, 0)
+func InitValidator() {
+	validate = validator.New()
+	uni := ut.New(zh.New())
+	translator, _ = uni.GetTranslator("zh")
 
-		for _, err := range errs {
-			errMsgs = append(errMsgs, fmt.Sprintf(
-				"[%s]: '%v' | Needs to implement '%s'",
-				err.FailedField,
-				err.Value,
-				err.Tag,
-			))
+	err := zh_translations.RegisterDefaultTranslations(validate, translator)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func ValidateStruct(data interface{}) error {
+	err := validate.Struct(data)
+	strSli := make([]string, 0)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			strSli = append(strSli, err.Translate(translator))
 		}
-
 		return &fiber.Error{
-			Code:    fiber.ErrBadRequest.Code,
-			Message: strings.Join(errMsgs, " and "),
+			Code:    0,
+			Message: strings.Join(strSli, ","),
 		}
 	}
 	return nil
+
 }
