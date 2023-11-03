@@ -5,20 +5,13 @@ import (
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	zh_translations "github.com/go-playground/validator/v10/translations/zh"
+	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/gofiber/fiber/v2"
-	"strings"
+	"reflect"
 )
 
 var validate *validator.Validate
 var translator ut.Translator
-
-type ErrorResponse struct {
-	Error       bool
-	FailedField string
-	Tag         string
-	Value       interface{}
-}
 
 func init() {
 	InitValidator()
@@ -29,24 +22,33 @@ func InitValidator() {
 	uni := ut.New(zh.New())
 	translator, _ = uni.GetTranslator("zh")
 
-	err := zh_translations.RegisterDefaultTranslations(validate, translator)
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		name := field.Tag.Get("json")
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	err := zhtranslations.RegisterDefaultTranslations(validate, translator)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func ValidateStruct(data interface{}) error {
+func ValidateStruct(data interface{}) (fiber.Map, error) {
 	err := validate.Struct(data)
-	strSli := make([]string, 0)
+
+	errResponse := fiber.Map{}
+
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			strSli = append(strSli, err.Translate(translator))
+
+			// { 'name': '不能为空' }
+			errResponse[err.Field()] = err.Translate(translator)
 		}
-		return &fiber.Error{
-			Code:    0,
-			Message: strings.Join(strSli, ","),
-		}
+		return errResponse, err
 	}
-	return nil
+	return errResponse, nil
 
 }

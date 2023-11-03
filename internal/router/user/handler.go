@@ -25,19 +25,23 @@ func Register(ctx *fiber.Ctx) error {
 
 	response := app.NewResponse(ctx)
 
+	// parse
 	err := response.BodyParserErrorResponse(user)
 	if err != nil {
 		return err
 	}
 
-	err = validation.ValidateStruct(user)
-	if err != nil {
-		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
+	// validation
+	validateErrRes, validateErr := validation.ValidateStruct(user)
+	if validateErr != nil {
+		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(validateErrRes))
 	}
 
+	// 正常的业务逻辑
 	global.DBEngine.Create(&user)
 
-	return response.ToResponse("新增成功", user)
+	return response.ToResponse(errcode.Success.WithDetails(user))
+
 }
 
 func GetUser() {

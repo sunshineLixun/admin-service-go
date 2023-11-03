@@ -21,12 +21,12 @@ func NewResponse(ctx *fiber.Ctx) *Response {
 	return &Response{Ctx: ctx}
 }
 
-func (r *Response) ToResponse(message string, data interface{}) error {
+func (r *Response) ToResponse(err *errcode.Error) error {
 	response := models.ResponseHTTP{
 		Success: true,
-		Message: message,
-		Data:    data,
-		Code:    0,
+		Message: err.Msg(),
+		Data:    err.Data(),
+		Code:    err.Code(),
 	}
 
 	return r.Ctx.Status(http.StatusOK).JSON(response)
@@ -35,14 +35,9 @@ func (r *Response) ToResponse(message string, data interface{}) error {
 func (r *Response) ToErrorResponse(err *errcode.Error) error {
 	response := models.ResponseHTTP{
 		Success: false,
-		Data:    nil,
+		Data:    err.Data(),
 		Message: err.Msg(),
 		Code:    err.Code(),
-	}
-
-	data := err.Data()
-	if len(data) > 0 {
-		response.Data = data
 	}
 
 	return r.Ctx.Status(http.StatusBadRequest).JSON(response)

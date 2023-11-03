@@ -7,7 +7,7 @@ import (
 type Error struct {
 	code int
 	msg  string
-	data []string
+	data interface{}
 }
 
 var codes = map[int]string{}
@@ -32,7 +32,7 @@ func (e *Error) Msg() string {
 	return e.msg
 }
 
-func (e *Error) Data() []string {
+func (e *Error) Data() interface{} {
 	return e.data
 }
 
@@ -40,13 +40,8 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("错误码：%d, 错误信息：%s", e.Code(), e.Msg())
 }
 
-func (e *Error) WithDetails(details ...string) *Error {
+func (e *Error) WithDetails(data interface{}) *Error {
 	newError := *e
-	newError.data = []string{}
-
-	for _, data := range details {
-		newError.data = append(newError.data, data)
-	}
-
+	newError.data = data
 	return &newError
 }
