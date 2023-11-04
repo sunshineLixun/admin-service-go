@@ -4,7 +4,7 @@ import (
 	"admin-service-go/global"
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/app"
-	"admin-service-go/pkg/errcode"
+	"admin-service-go/pkg/code"
 	"admin-service-go/pkg/validation"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -36,15 +36,15 @@ func Register(ctx *fiber.Ctx) error {
 	// validation
 	validateErrRes, validateErr := validation.ValidateStruct(user)
 	if validateErr != nil {
-		return response.ToErrorResponse(http.StatusBadGateway, errcode.InvalidParams.WithDetails(validateErrRes))
+		return response.BadRequestToResponse(validateErrRes)
 	}
 
 	// 正常的业务逻辑
 	if res := global.DBEngine.Create(&user); res.Error != nil {
-		return response.ToErrorResponse(http.StatusServiceUnavailable, errcode.ServerError.WithDetails(res.Error.Error()))
+		return response.InternalServerErrorToResponse(res.Error.Error())
 	}
 
-	return response.ToResponse(errcode.Success.WithDetails(user))
+	return response.ToResponse(code.Success, user)
 
 }
 
@@ -65,10 +65,10 @@ func GetAllUser(ctx *fiber.Ctx) error {
 	var users []models.User
 
 	if res := global.DBEngine.Find(&users); res.Error != nil {
-		return response.ToErrorResponse(http.StatusServiceUnavailable, errcode.ServerError)
+		return response.ToErrorResponse(http.StatusServiceUnavailable, code.ServiceFail, nil)
 	}
 
-	return response.ToResponse(errcode.Success.WithDetails(users))
+	return response.ToResponse(code.Success, users)
 
 }
 
@@ -92,11 +92,10 @@ func GetUserById(ctx *fiber.Ctx) error {
 	user := new(models.User)
 
 	if err := global.DBEngine.First(&user, id).Error; err != nil {
-		fmt.Println(err.Error())
-		return response.ToErrorResponse(http.StatusOK, errcode.NotFound.WithDetails(fmt.Sprintf("未找到id为%s的用户", id)))
+		return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
 	}
 
-	return response.ToResponse(errcode.Success.WithDetails(user))
+	return response.ToResponse(code.Success, user)
 }
 
 func UpdateUser() {

@@ -2,7 +2,7 @@ package app
 
 import (
 	"admin-service-go/internal/models"
-	"admin-service-go/pkg/errcode"
+	"admin-service-go/pkg/code"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
@@ -21,32 +21,40 @@ func NewResponse(ctx *fiber.Ctx) *Response {
 	return &Response{Ctx: ctx}
 }
 
-func (r *Response) ToResponse(err *errcode.Error) error {
+func (r *Response) ToResponse(msg string, data interface{}) error {
 	response := models.ResponseHTTP{
 		Success: true,
-		Message: err.Msg(),
-		Data:    err.Data(),
-		Code:    err.Code(),
+		Message: msg,
+		Data:    data,
+		Code:    1,
 	}
 
 	return r.Ctx.Status(http.StatusOK).JSON(response)
 }
 
-func (r *Response) ToErrorResponse(status int, err *errcode.Error) error {
+func (r *Response) ToErrorResponse(status int, msg string, data interface{}) error {
 	response := models.ResponseHTTP{
 		Success: false,
-		Data:    err.Data(),
-		Message: err.Msg(),
-		Code:    err.Code(),
+		Data:    data,
+		Message: msg,
+		Code:    0,
 	}
 
 	return r.Ctx.Status(status).JSON(response)
 }
 
+func (r *Response) BadRequestToResponse(data interface{}) error {
+	return r.ToErrorResponse(http.StatusBadRequest, code.ParamsFail, data)
+}
+
+func (r *Response) InternalServerErrorToResponse(data interface{}) error {
+	return r.ToErrorResponse(http.StatusInternalServerError, code.ServiceFail, data)
+}
+
 func (r *Response) BodyParserErrorResponse(out interface{}) error {
 
 	if err := r.Ctx.BodyParser(&out); err != nil {
-		return r.ToErrorResponse(http.StatusBadRequest, errcode.NewError(1, err.Error()))
+		return r.InternalServerErrorToResponse(err.Error())
 	}
 
 	return nil
