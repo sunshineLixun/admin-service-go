@@ -1,7 +1,8 @@
 package code
 
 var (
-	Success     = "成功"
-	ServiceFail = "服务器内部错误"
-	ParamsFail  = "参数错误"
+	Success        = "成功"
+	ServiceFail    = "服务器内部错误"
+	ParamsFail     = "参数错误"
+	RecordNotFound = "record not found"
 )

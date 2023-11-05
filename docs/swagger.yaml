@@ -1,6 +1,4 @@
 definitions:
-  errcode.Error:
-    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -72,15 +70,43 @@ paths:
         "400":
           description: 请求错误
           schema:
-            $ref: '#/definitions/errcode.Error'
+            $ref: '#/definitions/models.ResponseHTTP'
         "500":
           description: 内部错误
           schema:
-            $ref: '#/definitions/errcode.Error'
+            $ref: '#/definitions/models.ResponseHTTP'
       summary: 获取所有用户
       tags:
       - user
   /api/v1/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据id删除用户
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      summary: 根据id删除用户
+      tags:
+      - user
     get:
       consumes:
       - application/json
@@ -105,14 +131,14 @@ paths:
                     $ref: '#/definitions/models.User'
                   type: array
               type: object
-        "404":
+        "400":
           description: 请求错误
           schema:
-            $ref: '#/definitions/errcode.Error'
-        "503":
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
           description: 内部错误
           schema:
-            $ref: '#/definitions/errcode.Error'
+            $ref: '#/definitions/models.ResponseHTTP'
       summary: 根据id获取用户详情
       tags:
       - user
@@ -138,11 +164,11 @@ paths:
         "400":
           description: 请求错误
           schema:
-            $ref: '#/definitions/errcode.Error'
+            $ref: '#/definitions/models.ResponseHTTP'
         "500":
           description: 内部错误
           schema:
-            $ref: '#/definitions/errcode.Error'
+            $ref: '#/definitions/models.ResponseHTTP'
       summary: 注册
       tags:
       - user

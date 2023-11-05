@@ -54,7 +54,7 @@ func (r *Response) InternalServerErrorToResponse(data interface{}) error {
 func (r *Response) BodyParserErrorResponse(out interface{}) error {
 
 	if err := r.Ctx.BodyParser(&out); err != nil {
-		return r.InternalServerErrorToResponse(err.Error())
+		return err
 	}
 
 	return nil

@@ -6,8 +6,10 @@ import (
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/code"
 	"admin-service-go/pkg/validation"
+	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -19,8 +21,8 @@ import (
 // @Produce json
 // @Param user body models.UserSwagger true "接口入参"
 // @Success 200 {object} models.ResponseHTTP{}
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
+// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
+// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
 // @Router /api/v1/user/register [post]
 func Register(ctx *fiber.Ctx) error {
 	user := new(models.User)
@@ -30,7 +32,14 @@ func Register(ctx *fiber.Ctx) error {
 	// parse
 	err := response.BodyParserErrorResponse(&user)
 	if err != nil {
-		return err
+		return response.InternalServerErrorToResponse(err.Error())
+	}
+
+	// 判断是否已经注册过
+	isExist := getUserByUserName(user)
+
+	if isExist {
+		return response.ToResponse("已经存在该用户", nil)
 	}
 
 	// validation
@@ -48,6 +57,14 @@ func Register(ctx *fiber.Ctx) error {
 
 }
 
+func getUserByUserName(user *models.User) bool {
+
+	res := global.DBEngine.Where("user_name = ?", user.UserName).First(&user)
+
+	return res.RowsAffected > 0
+
+}
+
 // GetAllUser 获取所有用户
 // @Summary 获取所有用户
 // @Description 获取所有用户
@@ -55,8 +72,8 @@ func Register(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.ResponseHTTP{data=[]models.User}
-// @Failure 400 {object} errcode.Error "请求错误"
-// @Failure 500 {object} errcode.Error "内部错误"
+// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
+// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
 // @Router /api/v1/user [get]
 func GetAllUser(ctx *fiber.Ctx) error {
 
@@ -80,8 +97,8 @@ func GetAllUser(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "用户id"
 // @Success 200 {object} models.ResponseHTTP{data=[]models.User}
-// @Failure 404 {object} errcode.Error "请求错误"
-// @Failure 503 {object} errcode.Error "内部错误"
+// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
+// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
 // @Router /api/v1/user/{id} [get]
 func GetUserById(ctx *fiber.Ctx) error {
 
@@ -92,7 +109,13 @@ func GetUserById(ctx *fiber.Ctx) error {
 	user := new(models.User)
 
 	if err := global.DBEngine.First(&user, id).Error; err != nil {
-		return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+		}
+
+		return response.InternalServerErrorToResponse(err.Error())
+
 	}
 
 	return response.ToResponse(code.Success, user)
@@ -102,6 +125,36 @@ func UpdateUser() {
 
 }
 
-func DeleteUser() {
+// DeleteUser 根据id删除用户
+// @Summary 根据id删除用户
+// @Description 根据id删除用户
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "用户id"
+// @Success 200 {object} models.ResponseHTTP{}
+// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
+// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
+// @Router /api/v1/user/{id} [delete]
+func DeleteUser(ctx *fiber.Ctx) error {
+	response := app.NewResponse(ctx)
+
+	id := ctx.Params("id")
+
+	user := new(models.User)
+
+	if err := global.DBEngine.First(&user, id).Error; err != nil {
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+		}
+
+		return response.InternalServerErrorToResponse(err.Error())
+
+	}
+
+	global.DBEngine.Delete(&user)
+
+	return response.ToResponse(code.Success, nil)
 
 }

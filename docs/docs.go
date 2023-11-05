@@ -53,13 +53,13 @@ const docTemplate = `{
                     "400": {
                         "description": "请求错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     },
                     "500": {
                         "description": "内部错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     }
                 }
@@ -99,13 +99,13 @@ const docTemplate = `{
                     "400": {
                         "description": "请求错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     },
                     "500": {
                         "description": "内部错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     }
                 }
@@ -155,16 +155,58 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
+                    "400": {
                         "description": "请求错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     },
-                    "503": {
+                    "500": {
                         "description": "内部错误",
                         "schema": {
-                            "$ref": "#/definitions/errcode.Error"
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "根据id删除用户",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "根据id删除用户",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
                         }
                     }
                 }
@@ -172,9 +214,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "errcode.Error": {
-            "type": "object"
-        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {

@@ -8,4 +8,5 @@ func SetupRoutes(api fiber.Router) {
 	user.Get("/", GetAllUser)
 	user.Post("/register", Register)
 	user.Get("/:id", GetUserById)
+	user.Delete("/:id", DeleteUser)
 }
