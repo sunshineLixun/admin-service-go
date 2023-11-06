@@ -9,9 +9,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
 )
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
 
 // Register 注册新用户
 // @Summary 注册
@@ -42,6 +48,14 @@ func Register(ctx *fiber.Ctx) error {
 		return response.ToResponse("已经存在该用户", nil)
 	}
 
+	// 密码加密
+	hash, err := hashPassword(user.Password)
+	if err != nil {
+		return response.InternalServerErrorToResponse(err.Error())
+	}
+
+	user.Password = hash
+
 	// validation
 	validateErrRes, validateErr := validation.ValidateStruct(user)
 	if validateErr != nil {
@@ -53,7 +67,12 @@ func Register(ctx *fiber.Ctx) error {
 		return response.InternalServerErrorToResponse(res.Error.Error())
 	}
 
-	return response.ToResponse(code.Success, user)
+	newUser := models.ResponseUser{
+		Model:    user.Model,
+		UserName: user.UserName,
+	}
+
+	return response.ToResponse(code.Success, newUser)
 
 }
 
@@ -71,7 +90,7 @@ func getUserByUserName(user *models.User) bool {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.ResponseHTTP{data=[]models.User}
+// @Success 200 {object} models.ResponseHTTP{data=[]models.ResponseUser}
 // @Failure 400 {object} models.ResponseHTTP{} "请求错误"
 // @Failure 500 {object} models.ResponseHTTP{} "内部错误"
 // @Router /api/v1/user [get]

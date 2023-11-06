@@ -12,3 +12,9 @@ type User struct {
 
 	UserSwagger
 }
+
+// ResponseUser 用于返回用户信息，去掉密码字段
+type ResponseUser struct {
+	gorm.Model
+	UserName string `json:"userName"`
+}
