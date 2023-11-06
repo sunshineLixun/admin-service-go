@@ -100,11 +100,13 @@ func GetAllUser(ctx *fiber.Ctx) error {
 
 	var users []models.User
 
-	if res := global.DBEngine.Find(&users); res.Error != nil {
+	var apiUsers []models.ResponseUser
+
+	if res := global.DBEngine.Model(&users).Find(&apiUsers); res.Error != nil {
 		return response.ToErrorResponse(http.StatusServiceUnavailable, code.ServiceFail, nil)
 	}
 
-	return response.ToResponse(code.Success, users)
+	return response.ToResponse(code.Success, apiUsers)
 
 }
 
