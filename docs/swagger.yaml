@@ -30,6 +30,11 @@ definitions:
       userName:
         type: string
     type: object
+  models.UpdateUserInput:
+    properties:
+      userName:
+        type: string
+    type: object
   models.User:
     properties:
       createdAt:
@@ -153,6 +158,45 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
       summary: 根据id获取用户详情
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      description: 修改用户信息
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 接口入参
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseHTTP'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      summary: 修改用户信息
       tags:
       - user
   /api/v1/user/register:

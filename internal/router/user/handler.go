@@ -139,11 +139,59 @@ func GetUserById(ctx *fiber.Ctx) error {
 
 	}
 
-	return response.ToResponse(code.Success, user)
+	newUser := models.ResponseUser{
+		Model:    user.Model,
+		UserName: user.UserName,
+	}
+
+	return response.ToResponse(code.Success, newUser)
 }
 
-func UpdateUser() {
+// UpdateUser 修改用户信息
+// @Summary 修改用户信息
+// @Description 修改用户信息
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "用户id"
+// @Param user body models.UpdateUserInput true "接口入参"
+// @Success 200 {object} models.ResponseHTTP{data=models.User}
+// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
+// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
+// @Router /api/v1/user/{id} [patch]
+func UpdateUser(ctx *fiber.Ctx) error {
 
+	response := app.NewResponse(ctx)
+	var updateUserInput models.UpdateUserInput
+
+	err := response.BodyParserErrorResponse(&updateUserInput)
+	if err != nil {
+		return response.InternalServerErrorToResponse(err.Error())
+	}
+
+	id := ctx.Params("id")
+
+	var user models.User
+
+	if err := global.DBEngine.First(&user, id).Error; err != nil {
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+		}
+
+		return response.InternalServerErrorToResponse(err.Error())
+	}
+
+	user.UserName = updateUserInput.UserName
+
+	global.DBEngine.Save(&user)
+
+	newUser := models.ResponseUser{
+		Model:    user.Model,
+		UserName: user.UserName,
+	}
+
+	return response.ToResponse(code.Success, newUser)
 }
 
 // DeleteUser 根据id删除用户
