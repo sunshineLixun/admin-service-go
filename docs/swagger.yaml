@@ -34,6 +34,8 @@ definitions:
     properties:
       userName:
         type: string
+    required:
+    - userName
     type: object
   models.User:
     properties:

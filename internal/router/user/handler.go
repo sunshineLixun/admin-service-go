@@ -48,6 +48,12 @@ func Register(ctx *fiber.Ctx) error {
 		return response.ToResponse("已经存在该用户", nil)
 	}
 
+	// validation
+	validateErrRes, validateErr := validation.ValidateStruct(user)
+	if validateErr != nil {
+		return response.BadRequestToResponse(validateErrRes)
+	}
+
 	// 密码加密
 	hash, err := hashPassword(user.Password)
 	if err != nil {
@@ -55,12 +61,6 @@ func Register(ctx *fiber.Ctx) error {
 	}
 
 	user.Password = hash
-
-	// validation
-	validateErrRes, validateErr := validation.ValidateStruct(user)
-	if validateErr != nil {
-		return response.BadRequestToResponse(validateErrRes)
-	}
 
 	// 正常的业务逻辑
 	if res := global.DBEngine.Create(&user); res.Error != nil {
@@ -167,6 +167,13 @@ func UpdateUser(ctx *fiber.Ctx) error {
 	err := response.BodyParserErrorResponse(&updateUserInput)
 	if err != nil {
 		return response.InternalServerErrorToResponse(err.Error())
+	}
+
+	// validation
+	validateErrRes, validateErr := validation.ValidateStruct(updateUserInput)
+
+	if validateErr != nil {
+		return response.BadRequestToResponse(validateErrRes)
 	}
 
 	id := ctx.Params("id")

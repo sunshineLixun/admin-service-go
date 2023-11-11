@@ -21,5 +21,5 @@ type ResponseUser struct {
 
 // UpdateUserInput 更新用户输入参数
 type UpdateUserInput struct {
-	UserName string `json:"userName"`
+	UserName string `json:"userName" validate:"required"`
 }

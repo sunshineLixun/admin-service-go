@@ -326,6 +326,9 @@ const docTemplate = `{
         },
         "models.UpdateUserInput": {
             "type": "object",
+            "required": [
+                "userName"
+            ],
             "properties": {
                 "userName": {
                     "type": "string"
