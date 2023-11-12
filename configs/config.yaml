@@ -25,3 +25,7 @@ Database:
   ParseTime: True
   MaxIdleConns: 10
   MaxOpenConns: 30
+
+
+JWT:
+  Secret: secret  # 填写你的JWT密钥

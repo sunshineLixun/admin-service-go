@@ -10,6 +10,7 @@ var (
 	ServerSetting   = &setting.ServerSettingS{}
 	AppSetting      = &setting.AppSettingS{}
 	DatabaseSetting = &setting.DatabaseSettingS{}
+	JWTSetting      = &setting.JWTSettingS{}
 
 	Logger *logger.Logger
 )
@@ -31,6 +32,12 @@ func SetupSetting() error {
 	}
 	err = set.ReadSection("Database", DatabaseSetting)
 	if err != nil {
+		return err
+	}
+
+	err = set.ReadSection("JWT", JWTSetting)
+	if err != nil {
+
 		return err
 	}
 

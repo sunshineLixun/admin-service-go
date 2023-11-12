@@ -9,14 +9,30 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
+}
+
+func validToken(t *jwt.Token, id string) bool {
+	n, err := strconv.Atoi(id)
+	if err != nil {
+		return false
+	}
+
+	claims := t.Claims.(jwt.MapClaims)
+
+	fmt.Printf("%v\n", claims)
+
+	uid := int(claims["user_id"].(float64))
+	return uid == n
 }
 
 // Register 注册新用户
@@ -132,7 +148,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 	if err := global.DBEngine.First(&user, id).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
 		}
 
 		return response.InternalServerErrorToResponse(err.Error())
@@ -183,7 +199,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 	if err := global.DBEngine.First(&user, id).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
 		}
 
 		return response.InternalServerErrorToResponse(err.Error())
@@ -216,6 +232,12 @@ func DeleteUser(ctx *fiber.Ctx) error {
 	response := app.NewResponse(ctx)
 
 	id := ctx.Params("id")
+
+	token := ctx.Locals("user").(*jwt.Token)
+
+	if !validToken(token, id) {
+		return response.ToErrorResponse(http.StatusUnauthorized, "token失效", nil)
+	}
 
 	user := new(models.User)
 

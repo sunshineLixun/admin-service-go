@@ -1,6 +1,9 @@
 package user
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"admin-service-go/middleware"
+	"github.com/gofiber/fiber/v2"
+)
 
 func SetupRoutes(api fiber.Router) {
 	user := api.Group("/user")
@@ -8,6 +11,6 @@ func SetupRoutes(api fiber.Router) {
 	user.Get("/", GetAllUser)
 	user.Post("/register", Register)
 	user.Get("/:id", GetUserById)
-	user.Delete("/:id", DeleteUser)
+	user.Delete("/:id", middleware.Protected(), DeleteUser)
 	user.Patch("/:id", UpdateUser)
 }

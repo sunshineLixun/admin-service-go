@@ -4,7 +4,6 @@ import (
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/code"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type Response struct {
@@ -29,7 +28,7 @@ func (r *Response) ToResponse(msg string, data interface{}) error {
 		Code:    1,
 	}
 
-	return r.Ctx.Status(http.StatusOK).JSON(response)
+	return r.Ctx.Status(fiber.StatusOK).JSON(response)
 }
 
 func (r *Response) ToErrorResponse(status int, msg string, data interface{}) error {
@@ -44,11 +43,11 @@ func (r *Response) ToErrorResponse(status int, msg string, data interface{}) err
 }
 
 func (r *Response) BadRequestToResponse(data interface{}) error {
-	return r.ToErrorResponse(http.StatusBadRequest, code.ParamsFail, data)
+	return r.ToErrorResponse(fiber.StatusBadRequest, code.ParamsFail, data)
 }
 
 func (r *Response) InternalServerErrorToResponse(data interface{}) error {
-	return r.ToErrorResponse(http.StatusInternalServerError, code.ServiceFail, data)
+	return r.ToErrorResponse(fiber.StatusInternalServerError, code.ServiceFail, data)
 }
 
 func (r *Response) BodyParserErrorResponse(out interface{}) error {
