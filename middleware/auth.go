@@ -19,6 +19,6 @@ func jwtError(c *fiber.Ctx, err error) error {
 	if err.Error() == "Missing or malformed JWT" {
 		return response.ToErrorResponse(fiber.StatusBadRequest, "JWT 缺失或格式错误", nil)
 	}
-	return response.ToErrorResponse(fiber.StatusUnauthorized, "JWT 无效或过期", nil)
+	return response.ToErrorResponse(fiber.StatusUnauthorized, "无权限", nil)
 
 }

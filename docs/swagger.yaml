@@ -68,6 +68,41 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 登录
+      parameters:
+      - description: 接口入参
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseHTTP'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      summary: 登录
+      tags:
+      - user
   /api/v1/user:
     get:
       consumes:

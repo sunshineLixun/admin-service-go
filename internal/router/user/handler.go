@@ -233,10 +233,10 @@ func DeleteUser(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
 
-	token := ctx.Locals("user").(*jwt.Token)
+	token := ctx.Locals("username").(*jwt.Token)
 
 	if !validToken(token, id) {
-		return response.ToErrorResponse(http.StatusUnauthorized, "token失效", nil)
+		return response.ToErrorResponse(fiber.StatusUnauthorized, "token失效", nil)
 	}
 
 	user := new(models.User)
@@ -244,7 +244,7 @@ func DeleteUser(ctx *fiber.Ctx) error {
 	if err := global.DBEngine.First(&user, id).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.ToErrorResponse(http.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
+			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
 		}
 
 		return response.InternalServerErrorToResponse(err.Error())
