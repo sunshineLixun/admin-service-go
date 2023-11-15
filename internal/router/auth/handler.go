@@ -4,13 +4,12 @@ import (
 	"admin-service-go/global"
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/app"
+	jwt2 "admin-service-go/pkg/jwt"
 	"admin-service-go/pkg/validation"
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
 )
 
 func Hello(c *fiber.Ctx) error {
@@ -80,15 +79,7 @@ func Login(c *fiber.Ctx) error {
 		return response.ToErrorResponse(fiber.StatusUnauthorized, "密码错误", nil)
 	}
 
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = userModel.UserName
-	claims["user_id"] = userModel.ID
-	// 3天后过期
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-	t, err := token.SignedString([]byte(global.JWTSetting.Secret))
+	t, err := jwt2.CreateJwtToken(userModel.UserName, userModel.ID)
 
 	if err != nil {
 		return response.ToErrorResponse(fiber.StatusInternalServerError, err.Error(), nil)

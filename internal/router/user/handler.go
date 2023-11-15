@@ -5,34 +5,19 @@ import (
 	"admin-service-go/internal/models"
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/code"
+	"admin-service-go/pkg/jwt"
 	"admin-service-go/pkg/validation"
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
-	"strconv"
 )
 
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
-}
-
-func validToken(t *jwt.Token, id string) bool {
-	n, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
-
-	claims := t.Claims.(jwt.MapClaims)
-
-	fmt.Printf("%v\n", claims)
-
-	uid := int(claims["user_id"].(float64))
-	return uid == n
 }
 
 // Register 注册新用户
@@ -233,10 +218,8 @@ func DeleteUser(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
 
-	token := ctx.Locals("username").(*jwt.Token)
-
-	if !validToken(token, id) {
-		return response.ToErrorResponse(fiber.StatusUnauthorized, "token失效", nil)
+	if jwt.ValidToken(ctx, id) {
+		return response.ToErrorResponse(fiber.StatusUnauthorized, "无权限", nil)
 	}
 
 	user := new(models.User)
