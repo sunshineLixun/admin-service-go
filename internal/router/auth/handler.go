@@ -7,6 +7,7 @@ import (
 	jwt2 "admin-service-go/pkg/jwt"
 	"admin-service-go/pkg/validation"
 	"errors"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -28,7 +29,7 @@ func getUserByUsername(username string) (*models.User, error) {
 		UserSwagger: models.UserSwagger{UserName: username},
 	}).Find(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, fiber.NewError(fiber.StatusNotFound, fmt.Sprintf("未找到用户名为%s 的用户", username))
 		}
 		return nil, err
 	}

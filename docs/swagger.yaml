@@ -67,6 +67,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: This is a sample Server pets
+  title: Swagger Example API
+  version: 0.0.1
 paths:
   /api/v1/auth/login:
     post:
@@ -266,4 +269,9 @@ paths:
       summary: 注册
       tags:
       - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
