@@ -73,8 +73,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user": {
+        "/api/v1/user/getAllUsers": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "获取所有用户",
                 "consumes": [
                     "application/json"
@@ -171,6 +176,11 @@ const docTemplate = `{
         },
         "/api/v1/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "根据id获取用户详情",
                 "consumes": [
                     "application/json"
@@ -275,6 +285,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "修改用户信息",
                 "consumes": [
                     "application/json"

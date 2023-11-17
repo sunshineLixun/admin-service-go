@@ -105,36 +105,6 @@ paths:
       summary: 登录
       tags:
       - user
-  /api/v1/user:
-    get:
-      consumes:
-      - application/json
-      description: 获取所有用户
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.ResponseHTTP'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.ResponseUser'
-                  type: array
-              type: object
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/models.ResponseHTTP'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/models.ResponseHTTP'
-      summary: 获取所有用户
-      tags:
-      - user
   /api/v1/user/{id}:
     delete:
       consumes:
@@ -198,6 +168,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
       summary: 根据id获取用户详情
       tags:
       - user
@@ -237,7 +209,41 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
       summary: 修改用户信息
+      tags:
+      - user
+  /api/v1/user/getAllUsers:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有用户
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseHTTP'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ResponseUser'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
+      summary: 获取所有用户
       tags:
       - user
   /api/v1/user/register:

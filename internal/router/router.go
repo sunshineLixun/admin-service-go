@@ -2,6 +2,7 @@ package router
 
 import (
 	"admin-service-go/internal/router/auth"
+	"admin-service-go/internal/router/roles"
 	"admin-service-go/internal/router/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -14,5 +15,7 @@ func SetupRoutes(app *fiber.App) {
 	auth.SetupRoutes(api)
 
 	user.SetupRoutes(api)
+
+	roles.SetupRoutes(api)
 
 }

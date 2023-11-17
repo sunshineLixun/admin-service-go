@@ -20,6 +20,14 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
+func getUserByUserName(user *models.User) bool {
+
+	res := global.DBEngine.Where("user_name = ?", user.UserName).First(&user)
+
+	return res.RowsAffected > 0
+
+}
+
 // Register 注册新用户
 //
 //	@Summary		注册
@@ -78,25 +86,18 @@ func Register(ctx *fiber.Ctx) error {
 
 }
 
-func getUserByUserName(user *models.User) bool {
-
-	res := global.DBEngine.Where("user_name = ?", user.UserName).First(&user)
-
-	return res.RowsAffected > 0
-
-}
-
 // GetAllUser 获取所有用户
 //
 //	@Summary		获取所有用户
 //	@Description	获取所有用户
 //	@Tags			user
 //	@Accept			json
+//	@Security		BearerAuth
 //	@Produce		json
 //	@Success		200	{object}	models.ResponseHTTP{data=[]models.ResponseUser}
 //	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
-//	@Router			/api/v1/user [get]
+//	@Router			/api/v1/user/getAllUsers [get]
 func GetAllUser(ctx *fiber.Ctx) error {
 
 	response := app.NewResponse(ctx)
@@ -120,6 +121,7 @@ func GetAllUser(ctx *fiber.Ctx) error {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
+//	@Security		BearerAuth
 //	@Param			id	path		int	true	"用户id"
 //	@Success		200	{object}	models.ResponseHTTP{data=[]models.User}
 //	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
@@ -158,6 +160,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
+//	@Security		BearerAuth
 //	@Param			id		path		int						true	"用户id"
 //	@Param			user	body		models.UpdateUserInput	true	"接口入参"
 //	@Success		200		{object}	models.ResponseHTTP{data=models.User}
@@ -185,13 +188,8 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 	var user models.User
 
-	if err := global.DBEngine.First(&user, id).Error; err != nil {
-
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
-		}
-
-		return response.InternalServerErrorToResponse(err.Error())
+	if !jwt.ValidToken(ctx, id) {
+		return response.ToErrorResponse(fiber.StatusInternalServerError, "未找到改用户", nil)
 	}
 
 	user.UserName = updateUserInput.UserName

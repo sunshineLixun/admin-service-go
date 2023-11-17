@@ -13,10 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func Hello(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"status": "success", "message": "Hello", "data": nil})
-}
-
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
