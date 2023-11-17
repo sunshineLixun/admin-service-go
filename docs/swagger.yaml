@@ -144,7 +144,7 @@ paths:
       parameters:
       - description: 接口入参
         in: body
-        name: user
+        name: role
         required: true
         schema:
           $ref: '#/definitions/models.InputRole'

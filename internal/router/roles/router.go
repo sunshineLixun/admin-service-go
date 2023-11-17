@@ -8,6 +8,6 @@ import (
 func SetupRoutes(api fiber.Router) {
 	role := api.Group("/roles")
 
-	role.Post("/create", middleware.Protected(), CreateRole)
+	role.Post("/create", CreateRole)
 	role.Get("/", middleware.Protected(), GetAllRoles)
 }

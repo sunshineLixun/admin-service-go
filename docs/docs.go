@@ -89,7 +89,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "接口入参",
-                        "name": "user",
+                        "name": "role",
                         "in": "body",
                         "required": true,
                         "schema": {

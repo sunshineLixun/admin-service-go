@@ -25,8 +25,7 @@ func getRoleByRoleName(role *models.Role) bool {
 //	@Tags			角色
 //	@Accept			json
 //	@Produce		json
-//	@Security		BearerAuth
-//	@Param			user	body		models.InputRole	true	"接口入参"
+//	@Param			role	body		models.InputRole	true	"接口入参"
 //	@Success		200		{object}	models.ResponseHTTP{}
 //	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
@@ -35,6 +34,12 @@ func CreateRole(c *fiber.Ctx) error {
 
 	role := new(models.Role)
 	response := app.NewResponse(c)
+
+	// parse
+	err := response.BodyParserErrorResponse(&role)
+	if err != nil {
+		return response.InternalServerErrorToResponse(err.Error())
+	}
 
 	// validation
 	validateErrRes, validateErr := validation.ValidateStruct(role)
