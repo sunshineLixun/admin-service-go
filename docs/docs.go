@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "登录",
                 "parameters": [
@@ -73,6 +73,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/roles/create": {
+            "post": {
+                "description": "创建新角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "创建新角色",
+                "parameters": [
+                    {
+                        "description": "接口入参",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.InputRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/getAllUsers": {
             "get": {
                 "security": [
@@ -88,7 +134,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "获取所有用户",
                 "responses": {
@@ -138,7 +184,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "注册",
                 "parameters": [
@@ -189,7 +235,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "根据id获取用户详情",
                 "parameters": [
@@ -251,7 +297,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "根据id删除用户",
                 "parameters": [
@@ -298,7 +344,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "用户"
                 ],
                 "summary": "修改用户信息",
                 "parameters": [
@@ -367,6 +413,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.InputRole": {
+            "type": "object",
+            "required": [
+                "roleName"
+            ],
+            "properties": {
+                "roleName": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ResponseHTTP": {
             "type": "object",
             "properties": {
@@ -402,6 +459,36 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Role": {
+            "type": "object",
+            "required": [
+                "roleName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "roleName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "users": {
+                    "description": "关联用户",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                }
+            }
+        },
         "models.UpdateUserInput": {
             "type": "object",
             "required": [
@@ -431,6 +518,12 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Role"
+                    }
                 },
                 "updatedAt": {
                     "type": "string"

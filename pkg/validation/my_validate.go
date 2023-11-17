@@ -20,6 +20,7 @@ func init() {
 func InitValidator() {
 	validate = validator.New()
 	uni := ut.New(zh.New())
+	// 指定为中文
 	translator, _ = uni.GetTranslator("zh")
 
 	validate.RegisterTagNameFunc(func(field reflect.StructField) string {

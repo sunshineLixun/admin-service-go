@@ -36,7 +36,7 @@ func getUserByUsername(username string) (*models.User, error) {
 //
 //	@Summary		登录
 //	@Description	登录
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserSwagger	true	"接口入参"

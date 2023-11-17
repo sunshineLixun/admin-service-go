@@ -32,7 +32,7 @@ func getUserByUserName(user *models.User) bool {
 //
 //	@Summary		注册
 //	@Description	注册新用户
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserSwagger	true	"接口入参"
@@ -55,7 +55,7 @@ func Register(ctx *fiber.Ctx) error {
 	isExist := getUserByUserName(user)
 
 	if isExist {
-		return response.ToResponse("已经存在该用户", nil)
+		return response.ToErrorResponse(fiber.StatusBadRequest, "已经存在该用户", nil)
 	}
 
 	// validation
@@ -90,7 +90,7 @@ func Register(ctx *fiber.Ctx) error {
 //
 //	@Summary		获取所有用户
 //	@Description	获取所有用户
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Security		BearerAuth
 //	@Produce		json
@@ -118,7 +118,7 @@ func GetAllUser(ctx *fiber.Ctx) error {
 //
 //	@Summary		根据id获取用户详情
 //	@Description	根据id获取用户详情
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
@@ -157,7 +157,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 //
 //	@Summary		修改用户信息
 //	@Description	修改用户信息
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
@@ -208,7 +208,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 //
 //	@Summary		根据id删除用户
 //	@Description	根据id删除用户
-//	@Tags			user
+//	@Tags			用户
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth

@@ -11,6 +11,8 @@ type User struct {
 	gorm.Model
 
 	UserSwagger
+
+	Roles []Role `gorm:"many2many:user_roles" json:"roles"`
 }
 
 // ResponseUser 用于返回用户信息，去掉密码字段

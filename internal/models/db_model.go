@@ -53,7 +53,7 @@ func SetupDBEngine() error {
 		return err
 	}
 
-	err = global.DBEngine.AutoMigrate(&User{})
+	err = global.DBEngine.AutoMigrate(&User{}, &Role{})
 
 	return nil
 }

@@ -7,6 +7,13 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.InputRole:
+    properties:
+      roleName:
+        type: string
+    required:
+    - roleName
+    type: object
   models.ResponseHTTP:
     properties:
       code:
@@ -30,6 +37,26 @@ definitions:
       userName:
         type: string
     type: object
+  models.Role:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      roleName:
+        type: string
+      updatedAt:
+        type: string
+      users:
+        description: 关联用户
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    required:
+    - roleName
+    type: object
   models.UpdateUserInput:
     properties:
       userName:
@@ -47,6 +74,10 @@ definitions:
         type: integer
       password:
         type: string
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
       updatedAt:
         type: string
       userName:
@@ -104,7 +135,37 @@ paths:
             $ref: '#/definitions/models.ResponseHTTP'
       summary: 登录
       tags:
-      - user
+      - 用户
+  /api/v1/roles/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建新角色
+      parameters:
+      - description: 接口入参
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.InputRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      summary: 创建新角色
+      tags:
+      - 角色
   /api/v1/user/{id}:
     delete:
       consumes:
@@ -135,7 +196,7 @@ paths:
       - BearerAuth: []
       summary: 根据id删除用户
       tags:
-      - user
+      - 用户
     get:
       consumes:
       - application/json
@@ -172,7 +233,7 @@ paths:
       - BearerAuth: []
       summary: 根据id获取用户详情
       tags:
-      - user
+      - 用户
     patch:
       consumes:
       - application/json
@@ -213,7 +274,7 @@ paths:
       - BearerAuth: []
       summary: 修改用户信息
       tags:
-      - user
+      - 用户
   /api/v1/user/getAllUsers:
     get:
       consumes:
@@ -245,7 +306,7 @@ paths:
       - BearerAuth: []
       summary: 获取所有用户
       tags:
-      - user
+      - 用户
   /api/v1/user/register:
     post:
       consumes:
@@ -275,7 +336,7 @@ paths:
             $ref: '#/definitions/models.ResponseHTTP'
       summary: 注册
       tags:
-      - user
+      - 用户
 securityDefinitions:
   BearerAuth:
     in: header
