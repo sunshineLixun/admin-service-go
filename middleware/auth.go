@@ -3,6 +3,7 @@ package middleware
 import (
 	"admin-service-go/global"
 	"admin-service-go/pkg/app"
+	"errors"
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,9 +17,10 @@ func Protected() fiber.Handler {
 
 func jwtError(c *fiber.Ctx, err error) error {
 	response := app.NewResponse(c)
-	if err.Error() == "Missing or malformed JWT" {
-		return response.ToErrorResponse(fiber.StatusBadRequest, "JWT 缺失或格式错误", nil)
+	if errors.Is(err, jwtware.ErrJWTMissingOrMalformed) {
+		return response.ToJwtErrorResponse(fiber.StatusBadRequest, "Token失效，请重新登录", nil)
 	}
+
 	return response.ToErrorResponse(fiber.StatusUnauthorized, "无权限", nil)
 
 }

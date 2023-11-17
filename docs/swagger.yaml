@@ -67,8 +67,7 @@ definitions:
     type: object
 info:
   contact: {}
-  description: This is a sample Server pets
-  title: Swagger Example API
+  title: 管理后台API
   version: 0.0.1
 paths:
   /api/v1/auth/login:
@@ -162,6 +161,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
       summary: 根据id删除用户
       tags:
       - user
@@ -270,7 +271,7 @@ paths:
       tags:
       - user
 securityDefinitions:
-  ApiKeyAuth:
+  BearerAuth:
     in: header
     name: Authorization
     type: apiKey

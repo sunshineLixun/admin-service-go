@@ -47,14 +47,13 @@ func setupLogger() error {
 	return nil
 }
 
-// @title Swagger Example API
-// @version 0.0.1
-// @description This is a sample Server pets
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-// @accept json
-// @BasePath /api/v1
+// @title						管理后台API
+// @version					0.0.1
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
+// @accept						json
+// @BasePath					/
 func main() {
 
 	app := fiber.New(fiber.Config{

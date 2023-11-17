@@ -25,9 +25,8 @@ func CheckPasswordHash(password, hash string) bool {
 func getUserByUsername(username string) (*models.User, error) {
 	var user models.User
 
-	if err := global.DBEngine.Where(&models.User{
-		UserSwagger: models.UserSwagger{UserName: username},
-	}).Find(&user).Error; err != nil {
+	if err := global.DBEngine.Where("user_name = ?", username).First(&user).Error; err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fiber.NewError(fiber.StatusNotFound, fmt.Sprintf("未找到用户名为%s 的用户", username))
 		}
@@ -38,16 +37,17 @@ func getUserByUsername(username string) (*models.User, error) {
 }
 
 // Login 登录
-// @Summary 登录
-// @Description 登录
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param user body models.UserSwagger true "接口入参"
-// @Success 200 {object} models.ResponseHTTP{data=string}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/auth/login [post]
+//
+//	@Summary		登录
+//	@Description	登录
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UserSwagger	true	"接口入参"
+//	@Success		200		{object}	models.ResponseHTTP{data=string}
+//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/auth/login [post]
 func Login(c *fiber.Ctx) error {
 
 	response := app.NewResponse(c)
@@ -72,8 +72,8 @@ func Login(c *fiber.Ctx) error {
 
 	userModel, err = getUserByUsername(input.UserName)
 
-	if userModel == nil {
-		return response.ToErrorResponse(fiber.StatusUnauthorized, "用户名不存在", nil)
+	if err != nil {
+		return response.ToErrorResponse(fiber.StatusUnauthorized, err.Error(), nil)
 	}
 
 	if !CheckPasswordHash(password, userModel.Password) {

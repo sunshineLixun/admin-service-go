@@ -21,16 +21,17 @@ func hashPassword(password string) (string, error) {
 }
 
 // Register 注册新用户
-// @Summary 注册
-// @Description 注册新用户
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param user body models.UserSwagger true "接口入参"
-// @Success 200 {object} models.ResponseHTTP{}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/user/register [post]
+//
+//	@Summary		注册
+//	@Description	注册新用户
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UserSwagger	true	"接口入参"
+//	@Success		200		{object}	models.ResponseHTTP{}
+//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/user/register [post]
 func Register(ctx *fiber.Ctx) error {
 	user := new(models.User)
 
@@ -86,15 +87,16 @@ func getUserByUserName(user *models.User) bool {
 }
 
 // GetAllUser 获取所有用户
-// @Summary 获取所有用户
-// @Description 获取所有用户
-// @Tags user
-// @Accept json
-// @Produce json
-// @Success 200 {object} models.ResponseHTTP{data=[]models.ResponseUser}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/user [get]
+//
+//	@Summary		获取所有用户
+//	@Description	获取所有用户
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.ResponseHTTP{data=[]models.ResponseUser}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/user [get]
 func GetAllUser(ctx *fiber.Ctx) error {
 
 	response := app.NewResponse(ctx)
@@ -112,16 +114,17 @@ func GetAllUser(ctx *fiber.Ctx) error {
 }
 
 // GetUserById 根据id获取用户详情
-// @Summary 根据id获取用户详情
-// @Description 根据id获取用户详情
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param id path int true "用户id"
-// @Success 200 {object} models.ResponseHTTP{data=[]models.User}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/user/{id} [get]
+//
+//	@Summary		根据id获取用户详情
+//	@Description	根据id获取用户详情
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"用户id"
+//	@Success		200	{object}	models.ResponseHTTP{data=[]models.User}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/user/{id} [get]
 func GetUserById(ctx *fiber.Ctx) error {
 
 	response := app.NewResponse(ctx)
@@ -149,17 +152,18 @@ func GetUserById(ctx *fiber.Ctx) error {
 }
 
 // UpdateUser 修改用户信息
-// @Summary 修改用户信息
-// @Description 修改用户信息
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param id path int true "用户id"
-// @Param user body models.UpdateUserInput true "接口入参"
-// @Success 200 {object} models.ResponseHTTP{data=models.User}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/user/{id} [patch]
+//
+//	@Summary		修改用户信息
+//	@Description	修改用户信息
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int						true	"用户id"
+//	@Param			user	body		models.UpdateUserInput	true	"接口入参"
+//	@Success		200		{object}	models.ResponseHTTP{data=models.User}
+//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/user/{id} [patch]
 func UpdateUser(ctx *fiber.Ctx) error {
 
 	response := app.NewResponse(ctx)
@@ -203,23 +207,25 @@ func UpdateUser(ctx *fiber.Ctx) error {
 }
 
 // DeleteUser 根据id删除用户
-// @Summary 根据id删除用户
-// @Description 根据id删除用户
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param id path int true "用户id"
-// @Success 200 {object} models.ResponseHTTP{}
-// @Failure 400 {object} models.ResponseHTTP{} "请求错误"
-// @Failure 500 {object} models.ResponseHTTP{} "内部错误"
-// @Router /api/v1/user/{id} [delete]
+//
+//	@Summary		根据id删除用户
+//	@Description	根据id删除用户
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"用户id"
+//	@Success		200	{object}	models.ResponseHTTP{}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/user/{id} [delete]
 func DeleteUser(ctx *fiber.Ctx) error {
 	response := app.NewResponse(ctx)
 
 	id := ctx.Params("id")
 
-	if jwt.ValidToken(ctx, id) {
-		return response.ToErrorResponse(fiber.StatusUnauthorized, "无权限", nil)
+	if !jwt.ValidToken(ctx, id) {
+		return response.ToErrorResponse(fiber.StatusInternalServerError, "未找到改用户", nil)
 	}
 
 	user := new(models.User)

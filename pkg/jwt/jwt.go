@@ -9,19 +9,21 @@ import (
 )
 
 var (
+	User     = "user"
 	UserName = "username"
 	UserId   = "user_id"
 	Exp      = "exp"
 )
 
 func CreateJwtToken(userName string, userId uint) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
 
-	claims := token.Claims.(jwt.MapClaims)
-	claims[UserName] = userName
-	claims[UserId] = userId
-	// 3天后过期
-	claims[Exp] = time.Now().Add(time.Hour * 72).Unix()
+	claims := jwt.MapClaims{
+		UserName: userName,
+		UserId:   userId,
+		Exp:      time.Now().Add(time.Hour * 72).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	t, err := token.SignedString([]byte(global.JWTSetting.Secret))
 
@@ -34,14 +36,14 @@ func CreateJwtToken(userName string, userId uint) (string, error) {
 
 func ValidToken(ctx *fiber.Ctx, id string) bool {
 
-	token := ctx.Locals(UserName).(*jwt.Token)
+	user := ctx.Locals(User).(*jwt.Token)
 
 	n, err := strconv.Atoi(id)
 	if err != nil {
 		return false
 	}
 
-	claims := token.Claims.(jwt.MapClaims)
+	claims := user.Claims.(jwt.MapClaims)
 
 	uid := int(claims[UserId].(float64))
 

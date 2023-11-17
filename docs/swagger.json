@@ -1,8 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample Server pets",
-        "title": "Swagger Example API",
+        "title": "管理后台API",
         "contact": {},
         "version": "0.0.1"
     },
@@ -220,6 +219,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "根据id删除用户",
                 "consumes": [
                     "application/json"
@@ -429,7 +433,7 @@
         }
     },
     "securityDefinitions": {
-        "ApiKeyAuth": {
+        "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

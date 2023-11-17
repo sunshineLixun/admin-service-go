@@ -10,6 +10,12 @@ type Response struct {
 	Ctx *fiber.Ctx
 }
 
+var (
+	errorCode    = 0
+	successCode  = 1
+	jwtErrorCode = 1001
+)
+
 type Pager struct {
 	Page      int `json:"page"`
 	PageSize  int `json:"page_size"`
@@ -25,7 +31,7 @@ func (r *Response) ToResponse(msg string, data interface{}) error {
 		Success: true,
 		Message: msg,
 		Data:    data,
-		Code:    1,
+		Code:    successCode,
 	}
 
 	return r.Ctx.Status(fiber.StatusOK).JSON(response)
@@ -36,7 +42,18 @@ func (r *Response) ToErrorResponse(status int, msg string, data interface{}) err
 		Success: false,
 		Data:    data,
 		Message: msg,
-		Code:    0,
+		Code:    errorCode,
+	}
+
+	return r.Ctx.Status(status).JSON(response)
+}
+
+func (r *Response) ToJwtErrorResponse(status int, msg string, data interface{}) error {
+	response := models.ResponseHTTP{
+		Success: false,
+		Data:    data,
+		Message: msg,
+		Code:    jwtErrorCode,
 	}
 
 	return r.Ctx.Status(status).JSON(response)
