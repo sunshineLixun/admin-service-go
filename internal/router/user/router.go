@@ -9,7 +9,7 @@ func SetupRoutes(api fiber.Router) {
 	user := api.Group("/user")
 
 	user.Get("/getAllUsers", middleware.Protected(), GetAllUser)
-	user.Post("/create", Create)
+	user.Post("/create", middleware.Protected(), Create)
 	user.Get("/:id", middleware.Protected(), GetUserById)
 	user.Delete("/:id", middleware.Protected(), DeleteUser)
 	user.Patch("/:id", middleware.Protected(), UpdateUser)

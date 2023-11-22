@@ -4,9 +4,11 @@ import (
 	"admin-service-go/global"
 	"admin-service-go/pkg/setting"
 	"fmt"
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
+	"gorm.io/gorm/logger"
 )
 
 func NewDbEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
@@ -20,7 +22,9 @@ func NewDbEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
 		databaseSetting.Charset,
 		databaseSetting.ParseTime)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Warn),
+	})
 
 	if err != nil {
 		return nil, err
@@ -49,7 +53,7 @@ func SetupDBEngine() error {
 	var err error
 	global.DBEngine, err = NewDbEngine(global.DatabaseSetting)
 
-	err = global.DBEngine.AutoMigrate(&User{}, &Role{}, &UserRoles{})
+	err = global.DBEngine.AutoMigrate(&User{}, &Role{})
 
 	if err != nil {
 		return err

@@ -98,7 +98,7 @@ func Create(ctx *fiber.Ctx) error {
 	}
 
 	newUser := models.ResponseUser{
-		Model:    user.Model,
+		ID:       user.ID,
 		UserName: user.UserName,
 	}
 
@@ -123,14 +123,29 @@ func GetAllUser(ctx *fiber.Ctx) error {
 	response := app.NewResponse(ctx)
 
 	var users []models.User
+	var responseUsers []models.ResponseUser
 
-	var apiUsers []models.ResponseUser
-
-	if res := global.DBEngine.Model(&users).Find(&apiUsers); res.Error != nil {
+	if res := global.DBEngine.Debug().Model(&models.User{}).Preload("Roles").Find(&users); res.Error != nil {
 		return response.ToErrorResponse(http.StatusServiceUnavailable, code.ServiceFail, nil)
 	}
 
-	return response.ToResponse(code.Success, apiUsers)
+	for _, user := range users {
+		var roles []models.ResponseRole
+		for _, role := range user.Roles {
+			roles = append(roles, models.ResponseRole{
+				ID:       role.ID,
+				RoleName: role.RoleName,
+			})
+		}
+
+		responseUsers = append(responseUsers, models.ResponseUser{
+			ID:       user.ID,
+			UserName: user.UserName,
+			Roles:    roles,
+		})
+	}
+
+	return response.ToResponse(code.Success, responseUsers)
 
 }
 
@@ -166,7 +181,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 	}
 
 	newUser := models.ResponseUser{
-		Model:    user.Model,
+		ID:       user.ID,
 		UserName: user.UserName,
 	}
 
@@ -217,7 +232,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 	global.DBEngine.Save(&user)
 
 	newUser := models.ResponseUser{
-		Model:    user.Model,
+		ID:       user.ID,
 		UserName: user.UserName,
 	}
 

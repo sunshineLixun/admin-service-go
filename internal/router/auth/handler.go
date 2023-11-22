@@ -47,7 +47,7 @@ func Login(c *fiber.Ctx) error {
 
 	response := app.NewResponse(c)
 
-	input := new(models.UserSwagger)
+	input := new(models.UserLogin)
 
 	// 参数解析
 	err := response.BodyParserErrorResponse(&input)
