@@ -28,10 +28,20 @@ func getUserByUserName(user *models.User) bool {
 
 }
 
-// Register 注册新用户
+func getRoleByRoleId(roleId uint) models.Role {
+
+	var role models.Role
+
+	global.DBEngine.First(&role, roleId)
+
+	return role
+
+}
+
+// Create 创建新用户
 //
-//	@Summary		注册
-//	@Description	注册新用户
+//	@Summary		创建新用户
+//	@Description	创建新用户
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
@@ -40,7 +50,7 @@ func getUserByUserName(user *models.User) bool {
 //	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
 //	@Router			/api/v1/user/register [post]
-func Register(ctx *fiber.Ctx) error {
+func Create(ctx *fiber.Ctx) error {
 	user := new(models.User)
 
 	response := app.NewResponse(ctx)
@@ -71,6 +81,16 @@ func Register(ctx *fiber.Ctx) error {
 	}
 
 	user.Password = hash
+
+	// 查找角色
+	if user.RoleIds != nil {
+		var roles []models.Role
+		for _, v := range user.RoleIds {
+			roles = append(roles, getRoleByRoleId(v))
+		}
+		// 关联用户角色
+		user.Roles = roles
+	}
 
 	// 正常的业务逻辑
 	if res := global.DBEngine.Create(&user); res.Error != nil {

@@ -6,12 +6,13 @@ import (
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/code"
 	"admin-service-go/pkg/validation"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 func getRoleByRoleName(role *models.Role) bool {
 
-	sql := "SELECT * FORM roles WHERE role_name = :role_name"
+	sql := "SELECT * FROM roles WHERE role_name = @role_name"
 	// 这么写可以防止sql注入
 	res := global.DBEngine.Raw(sql, map[string]interface{}{"role_name": role.RoleName}).Scan(role)
 	return res.RowsAffected > 0
@@ -58,7 +59,7 @@ func CreateRole(c *fiber.Ctx) error {
 		return response.InternalServerErrorToResponse(res.Error.Error())
 	}
 
-	return response.ToResponse(code.Success, role)
+	return response.ToResponse(code.Success, nil)
 }
 
 func GetAllRoles(c *fiber.Ctx) error {

@@ -49,11 +49,11 @@ func SetupDBEngine() error {
 	var err error
 	global.DBEngine, err = NewDbEngine(global.DatabaseSetting)
 
+	err = global.DBEngine.AutoMigrate(&User{}, &Role{}, &UserRoles{})
+
 	if err != nil {
 		return err
 	}
-
-	err = global.DBEngine.AutoMigrate(&User{}, &Role{})
 
 	return nil
 }

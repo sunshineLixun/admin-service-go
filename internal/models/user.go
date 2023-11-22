@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type UserSwagger struct {
 	UserName string `gorm:"not null" json:"userName" validate:"required"`
 	Password string `gorm:"not null" json:"password" validate:"required"`
+	RoleIds  []uint `gorm:"-" json:"roleIds"`
 }
 
 type User struct {

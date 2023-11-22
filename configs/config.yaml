@@ -5,7 +5,6 @@ Server:
   ReadTimeout: 60
   WriteTimeout: 60
 
-
 App:
   DefaultPageSize: 10
   MaxPageSize: 100
@@ -13,19 +12,17 @@ App:
   LogFileName: app
   LogFileExt: .log
 
-
 Database:
   DBType: mysql
-  Username: root  # 填写你的数据库账号
-  Password: 123456789  # 填写你的数据库密码
+  Username: root # 填写你的数据库账号
+  Password: 123456789 # 填写你的数据库密码
   Host: 127.0.0.1
   Port: 3306
-  DBName: admin_service_db
+  DBName: admin_db
   Charset: utf8
   ParseTime: True
   MaxIdleConns: 10
   MaxOpenConns: 30
 
-
 JWT:
-  Secret: secret  # 填写你的JWT密钥
+  Secret: secret # 填写你的JWT密钥
