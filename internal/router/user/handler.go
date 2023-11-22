@@ -170,7 +170,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 
 	user := new(models.User)
 
-	if err := global.DBEngine.First(&user, id).Error; err != nil {
+	if err := global.DBEngine.Debug().Preload("Roles").Find(&user, id).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
@@ -180,9 +180,19 @@ func GetUserById(ctx *fiber.Ctx) error {
 
 	}
 
+	var roles []models.ResponseRole
+
+	for _, role := range user.Roles {
+		roles = append(roles, models.ResponseRole{
+			ID:       role.ID,
+			RoleName: role.RoleName,
+		})
+	}
+
 	newUser := models.ResponseUser{
 		ID:       user.ID,
 		UserName: user.UserName,
+		Roles:    roles,
 	}
 
 	return response.ToResponse(code.Success, newUser)
