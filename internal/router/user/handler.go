@@ -129,6 +129,8 @@ func GetAllUser(ctx *fiber.Ctx) error {
 		return response.ToErrorResponse(http.StatusServiceUnavailable, code.ServiceFail, nil)
 	}
 
+	// 双层循环，数据量大了之后 这里处理不算太好
+	// 如何只返回需要的字段？
 	for _, user := range users {
 		var roles []models.ResponseRole
 		for _, role := range user.Roles {
@@ -239,7 +241,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 	user.UserName = updateUserInput.UserName
 
-	global.DBEngine.Save(&user)
+	global.DBEngine.Updates(&user)
 
 	newUser := models.ResponseUser{
 		ID:       user.ID,

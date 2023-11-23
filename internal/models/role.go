@@ -19,3 +19,7 @@ type ResponseRole struct {
 	ID       uint   `json:"roleId"`
 	RoleName string `json:"roleName"`
 }
+
+type UpdateRoleInput struct {
+	RoleName string `json:"roleName" validate:"required"`
+}
