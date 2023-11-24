@@ -7,6 +7,20 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.CreateUserInput:
+    properties:
+      password:
+        type: string
+      roleIds:
+        items:
+          type: integer
+        type: array
+      userName:
+        type: string
+    required:
+    - password
+    - userName
+    type: object
   models.InputRole:
     properties:
       roleName:
@@ -24,16 +38,21 @@ definitions:
       success:
         type: boolean
     type: object
+  models.ResponseRole:
+    properties:
+      roleId:
+        type: integer
+      roleName:
+        type: string
+    type: object
   models.ResponseUser:
     properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
+      roles:
+        items:
+          $ref: '#/definitions/models.ResponseRole'
+        type: array
+      userId:
         type: integer
-      updatedAt:
-        type: string
       userName:
         type: string
     type: object
@@ -57,8 +76,19 @@ definitions:
     required:
     - roleName
     type: object
+  models.UpdateRoleInput:
+    properties:
+      roleName:
+        type: string
+    required:
+    - roleName
+    type: object
   models.UpdateUserInput:
     properties:
+      roleIds:
+        items:
+          type: integer
+        type: array
       userName:
         type: string
     required:
@@ -74,21 +104,15 @@ definitions:
         type: integer
       password:
         type: string
+      roleIds:
+        items:
+          type: integer
+        type: array
       roles:
         items:
           $ref: '#/definitions/models.Role'
         type: array
       updatedAt:
-        type: string
-      userName:
-        type: string
-    required:
-    - password
-    - userName
-    type: object
-  models.UserSwagger:
-    properties:
-      password:
         type: string
       userName:
         type: string
@@ -112,7 +136,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.UserSwagger'
+          $ref: '#/definitions/models.CreateUserInput'
       produces:
       - application/json
       responses:
@@ -136,6 +160,98 @@ paths:
       summary: 登录
       tags:
       - 用户
+  /api/v1/roles/:id:
+    get:
+      consumes:
+      - application/json
+      description: 根据角色id获取角色详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
+      summary: 根据角色id获取角色详情
+      tags:
+      - 角色
+  /api/v1/roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除角色信息
+      parameters:
+      - description: 角色id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
+      summary: 删除角色信息
+      tags:
+      - 角色
+    patch:
+      consumes:
+      - application/json
+      description: 修改角色信息
+      parameters:
+      - description: 角色id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 接口入参
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRoleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
+      summary: 修改角色信息
+      tags:
+      - 角色
   /api/v1/roles/create:
     post:
       consumes:
@@ -163,7 +279,34 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
       summary: 创建新角色
+      tags:
+      - 角色
+  /api/v1/roles/getAllRoles:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有角色
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/models.ResponseHTTP'
+      security:
+      - BearerAuth: []
+      summary: 获取所有角色
       tags:
       - 角色
   /api/v1/user/{id}:
@@ -311,14 +454,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: 注册新用户
+      description: 创建新用户
       parameters:
       - description: 接口入参
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.UserSwagger'
+          $ref: '#/definitions/models.CreateUserInput'
       produces:
       - application/json
       responses:
@@ -334,7 +477,7 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/models.ResponseHTTP'
-      summary: 注册
+      summary: 创建新用户
       tags:
       - 用户
 securityDefinitions:

@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserSwagger"
+                            "$ref": "#/definitions/models.CreateUserInput"
                         }
                     }
                 ],
@@ -73,8 +73,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/roles/:id": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据角色id获取角色详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "根据角色id获取角色详情",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/roles/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "创建新角色",
                 "consumes": [
                     "application/json"
@@ -94,6 +139,151 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.InputRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/getAllRoles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取所有角色",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "获取所有角色",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除角色信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "删除角色信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "角色id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseHTTP"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "修改角色信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "修改角色信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "角色id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "接口入参",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateRoleInput"
                         }
                     }
                 ],
@@ -176,7 +366,7 @@ const docTemplate = `{
         },
         "/api/v1/user/register": {
             "post": {
-                "description": "注册新用户",
+                "description": "创建新用户",
                 "consumes": [
                     "application/json"
                 ],
@@ -186,7 +376,7 @@ const docTemplate = `{
                 "tags": [
                     "用户"
                 ],
-                "summary": "注册",
+                "summary": "创建新用户",
                 "parameters": [
                     {
                         "description": "接口入参",
@@ -194,7 +384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserSwagger"
+                            "$ref": "#/definitions/models.CreateUserInput"
                         }
                     }
                 ],
@@ -413,6 +603,27 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateUserInput": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
         "models.InputRole": {
             "type": "object",
             "required": [
@@ -439,20 +650,28 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ResponseRole": {
+            "type": "object",
+            "properties": {
+                "roleId": {
+                    "type": "integer"
+                },
+                "roleName": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ResponseUser": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ResponseRole"
+                    }
                 },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
+                "userId": {
                     "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
                 },
                 "userName": {
                     "type": "string"
@@ -489,12 +708,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UpdateRoleInput": {
+            "type": "object",
+            "required": [
+                "roleName"
+            ],
+            "properties": {
+                "roleName": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UpdateUserInput": {
             "type": "object",
             "required": [
                 "userName"
             ],
             "properties": {
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "userName": {
                     "type": "string"
                 }
@@ -519,6 +755,12 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "roles": {
                     "type": "array",
                     "items": {
@@ -526,21 +768,6 @@ const docTemplate = `{
                     }
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "userName": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UserSwagger": {
-            "type": "object",
-            "required": [
-                "password",
-                "userName"
-            ],
-            "properties": {
-                "password": {
                     "type": "string"
                 },
                 "userName": {

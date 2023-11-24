@@ -20,7 +20,7 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func getUserByUserName(user *models.User) bool {
+func isRegistered(user *models.User) bool {
 
 	res := global.DBEngine.Where("user_name = ?", user.UserName).First(&user)
 
@@ -30,7 +30,8 @@ func getUserByUserName(user *models.User) bool {
 
 func getUserByUserId(id string) (*models.User, error) {
 	var user models.User
-	if err := global.DBEngine.Debug().First(&user, id).Error; err != nil {
+	// 关联查询
+	if err := global.DBEngine.Debug().Preload("Roles").First(&user, id).Error; err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "未找到该用户")
 	}
 	return &user, nil
@@ -89,7 +90,7 @@ func Create(ctx *fiber.Ctx) error {
 	}
 
 	// 判断是否已经注册过
-	isExist := getUserByUserName(user)
+	isExist := isRegistered(user)
 
 	if isExist {
 		return response.ToErrorResponse(fiber.StatusBadRequest, "已经存在该用户", nil)
@@ -258,9 +259,21 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 	user.UserName = updateUserInput.UserName
 
-	associationUserRole(user)
+	// 更新角色关联关系
+	if updateUserInput.RoleIds != nil && len(updateUserInput.RoleIds) > 0 {
+		// 更新之前解除关联关系
+		err := global.DBEngine.Debug().Model(&user).Association("Roles").Unscoped().Clear()
+		if err != nil {
+			return err
+		}
+		user.RoleIds = updateUserInput.RoleIds
+		associationUserRole(user)
+	}
 
-	global.DBEngine.Updates(&user)
+	global.DBEngine.Debug().Updates(&user)
+
+	// 再查询一遍用户信息
+	global.DBEngine.Debug().First(&user, id)
 
 	return response.ToResponse(code.Success, returnResponseUser(user))
 }
@@ -294,7 +307,7 @@ func DeleteUser(ctx *fiber.Ctx) error {
 	}
 
 	// 解除关联关系
-	global.DBEngine.Select("Roles").Delete(&user)
+	global.DBEngine.Debug().Select("Roles").Delete(&user, id)
 
 	return response.ToResponse(code.Success, nil)
 

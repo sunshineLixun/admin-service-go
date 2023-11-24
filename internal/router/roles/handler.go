@@ -31,7 +31,7 @@ func getRoleById(roleId string) (*models.Role, bool) {
 func GetRoleByIds(roleIds []uint) []models.Role {
 	var roles []models.Role
 
-	global.DBEngine.Debug().Raw("select id, role_name from roles where id in (?) and deleted_at is null ", roleIds).Scan(&roles)
+	global.DBEngine.Debug().Raw("select id, role_name from roles where id in (?) and deleted_at is null", roleIds).Scan(&roles)
 
 	return roles
 }
@@ -41,6 +41,7 @@ func GetRoleByIds(roleIds []uint) []models.Role {
 //	@Summary		创建新角色
 //	@Description	创建新角色
 //	@Tags			角色
+//	@Security		BearerAuth
 //	@Accept			json
 //	@Produce		json
 //	@Param			role	body		models.InputRole	true	"接口入参"
@@ -84,11 +85,12 @@ func CreateRole(c *fiber.Ctx) error {
 //	@Summary		获取所有角色
 //	@Description	获取所有角色
 //	@Tags			角色
+//	@Security		BearerAuth
 //	@Accept			json
 //	@Produce		json
-//	@Success		200		{object}	models.ResponseHTTP{}
-//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
-//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
+//	@Success		200	{object}	models.ResponseHTTP{}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
 //	@Router			/api/v1/roles/getAllRoles [get]
 func GetAllRoles(c *fiber.Ctx) error {
 
@@ -106,12 +108,13 @@ func GetAllRoles(c *fiber.Ctx) error {
 //	@Summary		根据角色id获取角色详情
 //	@Description	根据角色id获取角色详情
 //	@Tags			角色
+//	@Security		BearerAuth
 //	@Accept			json
 //	@Produce		json
-//	@Success		200		{object}	models.ResponseHTTP{}
-//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
-//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
-//	@Router			/api/v1/roles/getAllRoles [get]
+//	@Success		200	{object}	models.ResponseHTTP{}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/roles/:id [get]
 func GetRoleByRoleId(c *fiber.Ctx) error {
 
 	response := app.NewResponse(c)
@@ -141,10 +144,10 @@ func GetRoleByRoleId(c *fiber.Ctx) error {
 //	@Security		BearerAuth
 //	@Param			id		path		int						true	"角色id"
 //	@Param			user	body		models.UpdateRoleInput	true	"接口入参"
-//	@Success		200		{object}	models.ResponseHTTP{data=models.User}
+//	@Success		200		{object}	models.ResponseHTTP{}
 //	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
-//	@Router			/api/v1/role/{id} [patch]
+//	@Router			/api/v1/roles/{id} [patch]
 func UpdateRole(ctx *fiber.Ctx) error {
 	response := app.NewResponse(ctx)
 	var updateRoleInput models.UpdateRoleInput
@@ -191,11 +194,11 @@ func UpdateRole(ctx *fiber.Ctx) error {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id		path		int						true	"角色id"
-//	@Success		200		{object}	models.ResponseHTTP{data=models.User}
-//	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
-//	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
-//	@Router			/api/v1/role/{id} [patch]
+//	@Param			id	path		int	true	"角色id"
+//	@Success		200	{object}	models.ResponseHTTP{}
+//	@Failure		400	{object}	models.ResponseHTTP{}	"请求错误"
+//	@Failure		500	{object}	models.ResponseHTTP{}	"内部错误"
+//	@Router			/api/v1/roles/{id} [delete]
 func DeleteRole(c *fiber.Ctx) error {
 	response := app.NewResponse(c)
 

@@ -38,7 +38,7 @@ func getUserByUsername(username string) (*models.User, error) {
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
-//	@Param			user	body		models.UserSwagger	true	"接口入参"
+//	@Param			user	body		models.CreateUserInput	true	"接口入参"
 //	@Success		200		{object}	models.ResponseHTTP{data=string}
 //	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
