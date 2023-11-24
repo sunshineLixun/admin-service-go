@@ -21,9 +21,19 @@ func getRoleById(roleId string) (*models.Role, bool) {
 
 	var role models.Role
 
-	db := global.DBEngine.Debug().Raw("select * from roles where id = ?", roleId).Scan(&role)
+	if err := global.DBEngine.Debug().First(&role, roleId).Error; err != nil {
+		return nil, false
+	}
 
-	return &role, db.RowsAffected > 0
+	return &role, true
+}
+
+func GetRoleByIds(roleIds []uint) []models.Role {
+	var roles []models.Role
+
+	global.DBEngine.Debug().Raw("select id, role_name from roles where id in (?) and deleted_at is null ", roleIds).Scan(&roles)
+
+	return roles
 }
 
 // CreateRole 创建新角色
@@ -86,7 +96,7 @@ func GetAllRoles(c *fiber.Ctx) error {
 
 	var roles []models.ResponseRole
 
-	global.DBEngine.Debug().Raw("select id, role_name from roles").Scan(&roles)
+	global.DBEngine.Debug().Raw("select id, role_name from roles where deleted_at is null order by id").Scan(&roles)
 
 	return response.ToResponse(code.Success, roles)
 }

@@ -69,6 +69,12 @@ func (r *Response) InternalServerErrorToResponse(data interface{}) error {
 
 func (r *Response) BodyParserErrorResponse(out interface{}) error {
 
+	body := string(r.Ctx.BodyRaw())
+
+	if body == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "请求参数不能为空")
+	}
+
 	if err := r.Ctx.BodyParser(&out); err != nil {
 		return err
 	}

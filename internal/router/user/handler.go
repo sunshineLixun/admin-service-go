@@ -3,9 +3,9 @@ package user
 import (
 	"admin-service-go/global"
 	"admin-service-go/internal/models"
+	roles2 "admin-service-go/internal/router/roles"
 	"admin-service-go/pkg/app"
 	"admin-service-go/pkg/code"
-	"admin-service-go/pkg/jwt"
 	"admin-service-go/pkg/validation"
 	"errors"
 	"fmt"
@@ -28,14 +28,41 @@ func getUserByUserName(user *models.User) bool {
 
 }
 
-func getRoleByRoleId(roleId uint) models.Role {
+func getUserByUserId(id string) (*models.User, error) {
+	var user models.User
+	if err := global.DBEngine.Debug().First(&user, id).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "未找到该用户")
+	}
+	return &user, nil
+}
 
-	var role models.Role
+// 设置用户角色关联关系
+func associationUserRole(user *models.User) {
+	// 查找角色
+	if user.RoleIds != nil {
+		roles := roles2.GetRoleByIds(user.RoleIds)
+		// 关联用户角色
+		user.Roles = roles
+	}
+}
 
-	global.DBEngine.First(&role, roleId)
+func returnResponseUser(user *models.User) models.ResponseUser {
+	var roles []models.ResponseRole
 
-	return role
+	for _, role := range user.Roles {
+		roles = append(roles, models.ResponseRole{
+			ID:       role.ID,
+			RoleName: role.RoleName,
+		})
+	}
 
+	newUser := models.ResponseUser{
+		ID:       user.ID,
+		UserName: user.UserName,
+		Roles:    roles,
+	}
+
+	return newUser
 }
 
 // Create 创建新用户
@@ -45,7 +72,7 @@ func getRoleByRoleId(roleId uint) models.Role {
 //	@Tags			用户
 //	@Accept			json
 //	@Produce		json
-//	@Param			user	body		models.UserSwagger	true	"接口入参"
+//	@Param			user	body		models.CreateUserInput	true	"接口入参"
 //	@Success		200		{object}	models.ResponseHTTP{}
 //	@Failure		400		{object}	models.ResponseHTTP{}	"请求错误"
 //	@Failure		500		{object}	models.ResponseHTTP{}	"内部错误"
@@ -82,27 +109,14 @@ func Create(ctx *fiber.Ctx) error {
 
 	user.Password = hash
 
-	// 查找角色
-	if user.RoleIds != nil {
-		var roles []models.Role
-		for _, v := range user.RoleIds {
-			roles = append(roles, getRoleByRoleId(v))
-		}
-		// 关联用户角色
-		user.Roles = roles
-	}
+	associationUserRole(user)
 
 	// 正常的业务逻辑
-	if res := global.DBEngine.Create(&user); res.Error != nil {
+	if res := global.DBEngine.Create(user); res.Error != nil {
 		return response.InternalServerErrorToResponse(res.Error.Error())
 	}
 
-	newUser := models.ResponseUser{
-		ID:       user.ID,
-		UserName: user.UserName,
-	}
-
-	return response.ToResponse(code.Success, newUser)
+	return response.ToResponse(code.Success, returnResponseUser(user))
 
 }
 
@@ -172,7 +186,7 @@ func GetUserById(ctx *fiber.Ctx) error {
 
 	user := new(models.User)
 
-	if err := global.DBEngine.Debug().Preload("Roles").Find(&user, id).Error; err != nil {
+	if err := global.DBEngine.Debug().Preload("Roles").First(&user, id).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
@@ -221,7 +235,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 	err := response.BodyParserErrorResponse(&updateUserInput)
 	if err != nil {
-		return response.InternalServerErrorToResponse(err.Error())
+		return response.BadRequestToResponse(err.Error())
 	}
 
 	// validation
@@ -233,22 +247,22 @@ func UpdateUser(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
 
-	var user models.User
+	user, err := getUserByUserId(id)
+	if err != nil {
+		return response.ToErrorResponse(fiber.StatusBadRequest, err.Error(), nil)
+	}
 
-	if !jwt.ValidToken(ctx, id) {
-		return response.ToErrorResponse(fiber.StatusInternalServerError, "未找到改用户", nil)
+	if user.UserName == "admin" {
+		return response.ToErrorResponse(fiber.StatusBadRequest, "不能修改超管用户", nil)
 	}
 
 	user.UserName = updateUserInput.UserName
 
+	associationUserRole(user)
+
 	global.DBEngine.Updates(&user)
 
-	newUser := models.ResponseUser{
-		ID:       user.ID,
-		UserName: user.UserName,
-	}
-
-	return response.ToResponse(code.Success, newUser)
+	return response.ToResponse(code.Success, returnResponseUser(user))
 }
 
 // DeleteUser 根据id删除用户
@@ -269,23 +283,18 @@ func DeleteUser(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
 
-	if !jwt.ValidToken(ctx, id) {
-		return response.ToErrorResponse(fiber.StatusInternalServerError, "未找到改用户", nil)
+	user, err := getUserByUserId(id)
+
+	if err != nil {
+		return response.ToErrorResponse(fiber.StatusBadRequest, err.Error(), nil)
 	}
 
-	user := new(models.User)
-
-	if err := global.DBEngine.First(&user, id).Error; err != nil {
-
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.ToErrorResponse(fiber.StatusOK, fmt.Sprintf("未找到id为%s的用户", id), nil)
-		}
-
-		return response.InternalServerErrorToResponse(err.Error())
-
+	if user.UserName == "admin" {
+		return response.ToErrorResponse(fiber.StatusBadRequest, "不能删除超管用户", nil)
 	}
 
-	global.DBEngine.Delete(&user)
+	// 解除关联关系
+	global.DBEngine.Select("Roles").Delete(&user)
 
 	return response.ToResponse(code.Success, nil)
 

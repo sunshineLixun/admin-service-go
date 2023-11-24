@@ -14,6 +14,7 @@ type CreateUserInput struct {
 
 type UpdateUserInput struct {
 	UserName string `json:"userName" validate:"required"`
+	RoleIds  []uint `gorm:"-" json:"roleIds"`
 }
 
 type RoleModel struct {
